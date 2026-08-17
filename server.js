@@ -1,44 +1,56 @@
 const express = require('express');
+const mongoose = require('mongoose');
+require('dotenv').config();
+const User = require('./models/User');
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('Connected to MongoDB!');
+  })
+  .catch((error) => {
+    console.log('MongoDB connection failed:', error);
+  });
 
 // Route 1: Basic check
 app.get('/', (req, res) => {
   res.send('Suraksha Circle backend is running!');
 });
 
-// Route 2: GET all users
-app.get('/users', (req, res) => {
-  const users = [
-    { id: 1, name: 'Ramu', role: 'senior' },
-    { id: 2, name: 'Priya', role: 'caregiver' },
-    { id: 3, name: 'Arjun', role: 'volunteer' }
-  ];
-  res.json(users);
+// Route 2: GET all users from MongoDB
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching users', error });
+  }
 });
 
-// Route 3: POST - add a new user
-app.post('/users', (req, res) => {
-  const newUser = req.body;
-  console.log('New user received:', newUser);
-  res.json({ message: 'User received!', user: newUser });
+// Route 3: POST - create a real user in MongoDB
+app.post('/users', async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    await newUser.save();
+    res.status(201).json({ message: 'User created!', user: newUser });
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating user', error });
+  }
 });
 
-// Route 4: PUT - update a user by id
-app.put('/users/:id', (req, res) => {
-  const id = req.params.id;
-  const updatedData = req.body;
-  console.log(`Updating user ${id} with:`, updatedData);
-  res.json({ message: `User ${id} updated!`, updatedData });
-});
-
-// Route 5: DELETE - delete a user by id
-app.delete('/users/:id', (req, res) => {
-  const id = req.params.id;
-  console.log(`Deleting user ${id}`);
-  res.json({ message: `User ${id} deleted!` });
+// Route 4: DELETE - delete a user by id
+app.delete('/users/:id', async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ message: 'User deleted!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user', error });
+  }
 });
 
 app.listen(PORT, () => {
