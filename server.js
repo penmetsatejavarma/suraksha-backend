@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const User = require('./models/User');
 const authRoutes = require('./routes/auth');
+const protect = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,20 +15,28 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB!'))
   .catch((error) => console.log('MongoDB connection failed:', error));
 
-// Routes
+// Public routes (no token needed)
 app.get('/', (req, res) => {
   res.send('Suraksha Circle backend is running!');
 });
-
 app.use('/api/auth', authRoutes);
 
-// Users routes
-app.get('/users', async (req, res) => {
+// Protected routes (token required)
+app.get('/api/users', protect, async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    res.json({ users, requestedBy: req.user });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching users', error });
+  }
+});
+
+app.get('/api/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching profile', error });
   }
 });
 
