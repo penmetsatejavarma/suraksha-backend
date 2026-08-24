@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const User = require('./models/User');
 const authRoutes = require('./routes/auth');
+const seniorProfileRoutes = require('./routes/seniorProfile');
 const protect = require('./middleware/auth');
 
 const app = express();
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
   res.send('Suraksha Circle backend is running!');
 });
 app.use('/api/auth', authRoutes);
+app.use('/api/senior', seniorProfileRoutes);
 
 // Protected routes (token required)
 app.get('/api/users', protect, async (req, res) => {
