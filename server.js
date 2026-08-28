@@ -7,7 +7,7 @@ const seniorProfileRoutes = require('./routes/seniorProfile');
 const medicineRoutes = require('./routes/medicines');
 const checkInRoutes = require('./routes/checkIn');
 const protect = require('./middleware/auth');
-
+const sosRoutes = require('./routes/sos');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -26,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/senior', seniorProfileRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/checkin', checkInRoutes);
+app.use('/api/sos', sosRoutes);
 
 // Protected routes (token required)
 app.get('/api/users', protect, async (req, res) => {
