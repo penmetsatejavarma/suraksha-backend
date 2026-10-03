@@ -10,6 +10,7 @@ const protect = require('./middleware/auth');
 const sosRoutes = require('./routes/sos');
 const volunteerRoutes = require('./routes/volunteer');
 const caregiverRoutes = require('./routes/caregiver');
+const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -31,6 +32,7 @@ app.use('/api/checkin', checkInRoutes);
 app.use('/api/sos', sosRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/caregiver', caregiverRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Protected routes (token required)
 app.get('/api/users', protect, async (req, res) => {
