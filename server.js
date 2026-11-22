@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
 const User = require('./models/User');
 const authRoutes = require('./routes/auth');
@@ -11,10 +12,14 @@ const sosRoutes = require('./routes/sos');
 const volunteerRoutes = require('./routes/volunteer');
 const caregiverRoutes = require('./routes/caregiver');
 const adminRoutes = require('./routes/admin');
+const healthVaultRoutes = require('./routes/healthVault');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -33,6 +38,8 @@ app.use('/api/sos', sosRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/caregiver', caregiverRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/health-vault', healthVaultRoutes);
+app.use('/uploads', express.static('uploads'));
 
 // Protected routes (token required)
 app.get('/api/users', protect, async (req, res) => {

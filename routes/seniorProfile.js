@@ -11,9 +11,10 @@ router.post('/create', protect, async (req, res) => {
       return res.status(400).json({ message: "Profile already exists" });
     }
 
+    const { caregivers, user, ...safeBody } = req.body;
     const profile = new SeniorProfile({
       user: req.user.userId,
-      ...req.body
+      ...safeBody
     });
 
     await profile.save();
@@ -39,9 +40,10 @@ router.get('/me', protect, async (req, res) => {
 // Update senior profile
 router.put('/update', protect, async (req, res) => {
   try {
+    const { caregivers, user, ...safeBody } = req.body;
     const profile = await SeniorProfile.findOneAndUpdate(
       { user: req.user.userId },
-      req.body,
+      safeBody,
       { new: true }
     );
     if (!profile) {

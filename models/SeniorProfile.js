@@ -16,7 +16,8 @@ const seniorProfileSchema = new mongoose.Schema({
     relation: { type: String }
   },
   medicalConditions: [String],
-  bloodGroup: { type: String }
+  bloodGroup: { type: String },
+  caregivers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('SeniorProfile', seniorProfileSchema);

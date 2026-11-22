@@ -8,7 +8,7 @@ router.put('/register', protect, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.user.userId,
-      { role: 'volunteer', ...req.body },
+      { role: 'volunteer', name: req.body.name },
       { new: true }
     );
     res.status(200).json({ message: "Registered as volunteer!", user });
