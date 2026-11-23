@@ -55,4 +55,15 @@ router.get('/my', protect, async (req, res) => {
   }
 });
 
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    const f = await HealthFile.findOneAndDelete({ _id: req.params.id, user: req.user.userId });
+    if (!f) return res.status(404).json({ message: "File not found" });
+    fs.unlink(path.join('uploads', f.filename), () => {});
+    res.status(200).json({ message: "File deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 module.exports = router;

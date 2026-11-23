@@ -56,4 +56,14 @@ router.put('/users/:id/role', protect, isAdmin, async (req, res) => {
   }
 });
 
+router.put('/users/:id/status', protect, isAdmin, async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, { isActive: !!req.body.isActive }, { new: true });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ message: "Status updated", user });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 module.exports = router;

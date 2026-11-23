@@ -60,7 +60,9 @@ router.post('/verify-otp', async (req, res) => {
     // Find or create user
     let user = await User.findOne({ phone });
     if (!user) {
-      user = await User.create({ phone, role: role || 'senior', name: 'New User' });
+      const allowed = ['senior', 'caregiver', 'volunteer'];
+const newRole = (process.env.ADMIN_PHONE === phone) ? 'admin' : (allowed.includes(role) ? role : 'senior');
+user = await User.create({ phone, role: newRole, name: 'New User' });
     }
 
     // Create JWT token
