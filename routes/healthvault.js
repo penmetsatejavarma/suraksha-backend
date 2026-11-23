@@ -4,6 +4,8 @@ const HealthFile = require('../models/HealthFile');
 const multer = require('multer');
 const path = require('path');
 const protect = require('../middleware/auth');
+const fs = require('fs');
+if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
